@@ -3,177 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Web3 Services - Dashboard en Vivo</title>
+    <title>DFT Web3 Services - Datos Reales</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Librería para gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- Librería para fechas -->
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.0/build/global/luxon.min.js"></script>
     <style>
-        /* Estilos adicionales para el dashboard */
-        .wallet-section {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
-        
-        .connect-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .connect-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .wallet-info {
-            background: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-family: monospace;
-            color: #333;
-            border: 2px solid #667eea;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .disconnect-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .balance-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-        
-        /* Estilos para el dashboard */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .dashboard-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .price-display {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .price-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-        }
-        
-        .price-change {
-            font-size: 1.1em;
-            margin-top: 10px;
-        }
-        
-        .price-change.positive {
-            color: #00b894;
-        }
-        
-        .price-change.negative {
-            color: #d63031;
-        }
-        
-        .chart-container {
-            height: 300px;
-            margin-top: 20px;
-        }
-        
-        .transactions-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-        }
-        
-        .transactions-table th {
-            background: #f0f0f0;
-            padding: 10px;
-            text-align: left;
-        }
-        
-        .transactions-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .transactions-table tr:hover {
-            background: #f9f9f9;
-        }
-        
-        .badge-success {
-            background: #00b894;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8em;
-        }
-        
-        .refresh-btn {
-            background: none;
-            border: 1px solid #667eea;
-            color: #667eea;
-            padding: 5px 15px;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 0.9em;
-            margin-left: 10px;
-        }
-        
-        .refresh-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-        
-        .error {
-            color: #d63031;
-            padding: 10px;
-            background: #ffeaa7;
-            border-radius: 5px;
-        }
+        .wallet-section { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .connect-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+        .connect-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .wallet-info { background: white; padding: 10px 20px; border-radius: 25px; font-family: monospace; color: #333; border: 2px solid #667eea; display: flex; align-items: center; gap: 15px; }
+        .disconnect-btn { background: #ff4757; color: white; border: none; padding: 5px 15px; border-radius: 15px; cursor: pointer; font-size: 14px; }
+        .balance-info { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #667eea; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0; }
+        .dashboard-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .price-display { text-align: center; padding: 20px; }
+        .price-value { font-size: 2.5em; font-weight: bold; color: #667eea; }
+        .price-change { font-size: 1.1em; margin-top: 10px; }
+        .price-change.positive { color: #00b894; }
+        .price-change.negative { color: #d63031; }
+        .chart-container { height: 300px; margin-top: 20px; }
+        .transactions-table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        .transactions-table th { background: #f0f0f0; padding: 10px; text-align: left; }
+        .transactions-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        .refresh-btn { background: none; border: 1px solid #667eea; color: #667eea; padding: 5px 15px; border-radius: 15px; cursor: pointer; font-size: 0.9em; margin-left: 10px; }
+        .refresh-btn:hover { background: #667eea; color: white; }
+        .loading { text-align: center; padding: 20px; color: #666; }
+        .error { color: #d63031; padding: 10px; background: #ffeaa7; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Sección de wallet -->
         <div class="wallet-section" id="walletSection">
-            <button class="connect-btn" id="connectWalletBtn" onclick="connectWallet()">
-                🔌 Conectar Wallet
-            </button>
+            <button class="connect-btn" onclick="connectWallet()">🔌 Conectar Wallet</button>
         </div>
 
         <header>
@@ -181,305 +42,285 @@
             <p class="subtitle">Ecosistema DeFi en Polygon</p>
         </header>
 
-        <!-- Sección de balances (se muestra al conectar) -->
         <div id="balanceSection" style="display: none;">
             <div class="balance-info">
                 <h3>📊 Tus Saldos en Polygon</h3>
                 <p><strong>Dirección:</strong> <span id="walletAddress"></span></p>
                 <p><strong>💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
                 <p><strong>Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
-                <p><strong>💧 Tu liquidez en el pool:</strong> <span id="poolLiquidity">Consultando...</span></p>
             </div>
         </div>
 
-        <!-- NUEVO: Dashboard en vivo -->
         <section class="hero">
             <h2>📈 Dashboard en Vivo - Pool DFT/POL</h2>
             <div class="dashboard-grid">
-                <!-- Tarjeta de precio -->
                 <div class="dashboard-card">
                     <h3>💰 Precio de DFT</h3>
                     <div class="price-display">
                         <div class="price-value" id="dftPrice">Cargando...</div>
                         <div class="price-change" id="priceChange">--</div>
-                        <p id="priceTimestamp" style="font-size: 0.8em; color: #666;"></p>
+                        <p id="priceTimestamp"></p>
                     </div>
                 </div>
                 
-                <!-- Tarjeta de liquidez -->
                 <div class="dashboard-card">
                     <h3>💧 Liquidez del Pool</h3>
                     <p><strong>POL en pool:</strong> <span id="poolPol">Cargando...</span></p>
                     <p><strong>DFT en pool:</strong> <span id="poolDft">Cargando...</span></p>
                     <p><strong>Total USD:</strong> <span id="poolUsd">Calculando...</span></p>
-                    <p><strong>Volumen 24h:</strong> <span id="volume24h">--</span></p>
                 </div>
                 
-                <!-- Tarjeta de quemas -->
                 <div class="dashboard-card">
-                    <h3>🔥 Estadísticas de Quema</h3>
+                    <h3>🔥 Quemas (1%)</h3>
                     <p><strong>Total quemado:</strong> <span id="totalBurned">Consultando...</span></p>
-                    <p><strong>Quemas últimas 24h:</strong> <span id="burned24h">--</span></p>
-                    <p><strong>Tasa de quema:</strong> 1% por transacción</p>
+                    <p><strong>Última quema:</strong> <span id="lastBurn">--</span></p>
                 </div>
             </div>
             
-            <!-- Gráfica del pool -->
             <div class="dashboard-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>📊 Evolución del Precio DFT/POL (7 días)</h3>
-                    <button class="refresh-btn" onclick="refreshChartData()">↻ Actualizar</button>
-                </div>
+                <h3>📊 Precio Histórico DFT (7 días)</h3>
                 <div class="chart-container">
                     <canvas id="priceChart"></canvas>
                 </div>
             </div>
             
-            <!-- Últimas transacciones -->
             <div class="dashboard-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3>🔄 Últimas Transacciones en el Pool</h3>
-                    <button class="refresh-btn" onclick="refreshTransactions()">↻ Actualizar</button>
-                </div>
+                <h3>🔄 Últimas Transacciones en el Pool</h3>
                 <div id="transactions-container">
                     <table class="transactions-table">
                         <thead>
                             <tr>
+                                <th>Hash</th>
                                 <th>Tipo</th>
                                 <th>Cantidad</th>
                                 <th>Precio</th>
-                                <th>Wallet</th>
-                                <th>Hace</th>
+                                <th>Fecha</th>
                             </tr>
                         </thead>
                         <tbody id="transactions-tbody">
-                            <tr><td colspan="5" class="loading">Cargando transacciones...</td></tr>
+                            <tr><td colspan="5" class="loading">Cargando transacciones reales...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section class="services">
-            <h2>🛠️ Servicios Web3</h2>
-            <div class="service-grid">
-                <div class="service-card">
-                    <h3>🤖 Bot de Trading</h3>
-                    <p>Prueba gratuita. 1% de comisión solo sobre ganancias.</p>
-                    <span class="badge">En desarrollo</span>
-                </div>
-                <div class="service-card">
-                    <h3>⚡ Pool de Liquidez</h3>
-                    <p>Alimentadores automáticos para DFT</p>
-                    <span class="badge">Próximamente</span>
-                </div>
-                <div class="service-card">
-                    <h3>🔗 Web3 Tools</h3>
-                    <p>Conecta tu wallet y más</p>
-                    <span class="badge">Ideas</span>
-                </div>
-            </div>
-        </section>
-
         <footer>
-            <p>© 2025 - Construyendo el ecosistema DFT</p>
-            <p class="github">Hecho con ❤️ desde GitHub</p>
+            <p>© 2025 - Ecosistema DFT en Polygon</p>
         </footer>
     </div>
 
-    <!-- Librerías Web3 y utilidades -->
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
-    
     <script>
         // ============ CONFIGURACIÓN ============
-        const DFT_TOKEN_ADDRESS = '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F';
-        const YOUR_WALLET = '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD';
-        const POOL_ADDRESS = '0x67366782805870060151383F4BbFF9daB53e5cD6'; // Tu pool DFT/POL
-        
-        // Pool Manager de Uniswap V4 en Polygon
-        const UNISWAP_V4_POOL_MANAGER = '0x000000000004444c5dc75cb358380d2e3de08a90';
-        
-        // The Graph API para Uniswap V4
-        const UNISWAP_V4_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v4-polygon';
-        
+        const CONFIG = {
+            dftToken: '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F',
+            poolAddress: '0x67366782805870060151383F4BbFF9daB53e5cD6',
+            yourWallet: '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD',
+            polygonscanApiKey: 'MEB455IX85UYJEH2JUXP8STNVNV4RU1HZI', // ← TU API KEY
+            uniswapSubgraph: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v4-polygon'
+        };
+
         let web3;
         let userAccount;
         let priceChart;
-        let chartInitialized = false;
-        
-        // ABI mínimo para token ERC20
-        const tokenABI = [
-            {
-                "constant": true,
-                "inputs": [{"name": "_owner", "type": "address"}],
-                "name": "balanceOf",
-                "outputs": [{"name": "balance", "type": "uint256"}],
-                "type": "function"
-            },
-            {
-                "constant": true,
-                "inputs": [],
-                "name": "decimals",
-                "outputs": [{"name": "", "type": "uint8"}],
-                "type": "function"
-            }
-        ];
-        
+
+        // ABI para leer balance del token
+        const erc20ABI = [{
+            "constant": true,
+            "inputs": [{"name": "_owner", "type": "address"}],
+            "name": "balanceOf",
+            "outputs": [{"name": "balance", "type": "uint256"}],
+            "type": "function"
+        }];
+
         // ============ FUNCIONES DE WALLET ============
         async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    userAccount = accounts[0];
-                    
-                    web3 = new Web3(window.ethereum);
-                    
-                    document.getElementById('walletSection').innerHTML = `
-                        <div class="wallet-info">
-                            <span>🔗 ${userAccount.slice(0, 6)}...${userAccount.slice(-4)}</span>
-                            <button class="disconnect-btn" onclick="disconnectWallet()">Desconectar</button>
-                        </div>
-                    `;
-                    
-                    document.getElementById('balanceSection').style.display = 'block';
-                    await loadBalances();
-                    
-                } catch (error) {
-                    console.error('Error conectando wallet:', error);
-                    alert('Error al conectar wallet: ' + error.message);
-                }
-            } else {
-                alert('¡Necesitas MetaMask! Por favor instala MetaMask desde https://metamask.io/');
+            if (!window.ethereum) {
+                alert('Instala MetaMask!');
+                return;
+            }
+            try {
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                userAccount = accounts[0];
+                web3 = new Web3(ethereum);
+                
+                document.getElementById('walletSection').innerHTML = `
+                    <div class="wallet-info">
+                        <span>🔗 ${userAccount.slice(0,6)}...${userAccount.slice(-4)}</span>
+                        <button class="disconnect-btn" onclick="disconnectWallet()">Desconectar</button>
+                    </div>
+                `;
+                
+                document.getElementById('balanceSection').style.display = 'block';
+                await loadBalances();
+                await loadPoolData();
+                await loadTransactions();
+                
+            } catch (error) {
+                console.error(error);
+                alert('Error conectando wallet');
             }
         }
-        
+
         async function loadBalances() {
             try {
-                const polBalanceWei = await web3.eth.getBalance(userAccount);
-                const polBalance = web3.utils.fromWei(polBalanceWei, 'ether');
-                document.getElementById('polBalance').innerText = parseFloat(polBalance).toFixed(4) + ' POL';
+                const polWei = await web3.eth.getBalance(userAccount);
+                document.getElementById('polBalance').innerText = 
+                    parseFloat(web3.utils.fromWei(polWei, 'ether')).toFixed(4) + ' POL';
                 
-                const tokenContract = new web3.eth.Contract(tokenABI, DFT_TOKEN_ADDRESS);
+                const tokenContract = new web3.eth.Contract(erc20ABI, CONFIG.dftToken);
+                const dftWei = await tokenContract.methods.balanceOf(userAccount).call();
+                const dftBalance = web3.utils.fromWei(dftWei, 'ether');
+                document.getElementById('dftBalance').innerText = 
+                    parseFloat(dftBalance).toLocaleString() + ' DFT';
                 
-                let decimals;
-                try {
-                    decimals = await tokenContract.methods.decimals().call();
-                } catch (e) {
-                    decimals = 18;
-                }
-                
-                const dftBalanceWei = await tokenContract.methods.balanceOf(userAccount).call();
-                const dftBalance = dftBalanceWei / (10 ** decimals);
-                document.getElementById('dftBalance').innerText = dftBalance.toFixed(2) + ' DFT';
-                
-                if (userAccount.toLowerCase() === YOUR_WALLET.toLowerCase()) {
-                    document.getElementById('walletAddress').innerHTML = '🚀 <strong>Wallet Principal (Tú)</strong> - ' + userAccount;
-                    document.getElementById('poolLiquidity').innerHTML = 'Eres el proveedor de liquidez del pool DFT/POL';
-                } else {
-                    document.getElementById('walletAddress').innerText = userAccount;
-                    document.getElementById('poolLiquidity').innerHTML = 'Conectado como visitor';
-                }
-                
+                document.getElementById('walletAddress').innerHTML = 
+                    userAccount.toLowerCase() === CONFIG.yourWallet.toLowerCase() 
+                        ? '🚀 Wallet Principal (Tú)' 
+                        : `Conectado: ${userAccount}`;
+                        
             } catch (error) {
                 console.error('Error cargando balances:', error);
-                document.getElementById('dftBalance').innerText = 'Error al cargar';
-                document.getElementById('polBalance').innerText = 'Error al cargar';
             }
         }
-        
+
         function disconnectWallet() {
             userAccount = null;
-            document.getElementById('walletSection').innerHTML = `
-                <button class="connect-btn" onclick="connectWallet()">
-                    🔌 Conectar Wallet
-                </button>
-            `;
+            document.getElementById('walletSection').innerHTML = 
+                '<button class="connect-btn" onclick="connectWallet()">🔌 Conectar Wallet</button>';
             document.getElementById('balanceSection').style.display = 'none';
         }
-        
-        if (typeof window.ethereum !== 'undefined') {
-            window.ethereum.on('accountsChanged', function(accounts) {
-                if (accounts.length > 0) {
-                    userAccount = accounts[0];
-                    loadBalances();
-                } else {
-                    disconnectWallet();
-                }
-            });
-        }
-        
-        // ============ FUNCIONES DEL DASHBOARD ============
-        
-        // Función para obtener precio actual desde el pool (simulado por ahora)
-        async function fetchCurrentPrice() {
-            // Como no tenemos acceso directo al pool, usamos una estimación
-            // En un entorno real, consultarías el subgraph de Uniswap
-            
-            // Datos fijos de tu pool: 10 POL / 9,999 DFT
-            const polInPool = 10;
-            const dftInPool = 9999;
-            const price = polInPool / dftInPool; // POL por DFT
-            const priceInDFT = dftInPool / polInPool; // DFT por POL
-            
-            // Precio en USD (aproximado: 1 POL ≈ $0.10)
-            const polPriceUsd = 0.10;
-            const dftPriceUsd = price * polPriceUsd;
-            
-            return {
-                pricePolPerDft: price,
-                priceDftPerPol: priceInDFT,
-                priceUsd: dftPriceUsd,
-                polInPool: polInPool,
-                dftInPool: dftInPool
-            };
-        }
-        
-        // Actualizar precios en la UI
-        async function updatePriceDisplay() {
+
+        // ============ DATOS DEL POOL ============
+        async function loadPoolData() {
             try {
-                const data = await fetchCurrentPrice();
+                const polBalance = await getPoolBalance('native');
+                const dftBalance = await getPoolBalance('token');
                 
-                document.getElementById('dftPrice').innerText = `${data.priceUsd.toFixed(6)} USD`;
-                document.getElementById('poolPol').innerText = `${data.polInPool} POL`;
-                document.getElementById('poolDft').innerText = `${data.dftInPool.toLocaleString()} DFT`;
+                document.getElementById('poolPol').innerText = polBalance + ' POL';
+                document.getElementById('poolDft').innerText = dftBalance + ' DFT';
                 
-                const totalUsd = (data.polInPool * 0.10) + (data.dftInPool * data.priceUsd);
-                document.getElementById('poolUsd').innerText = `$${totalUsd.toFixed(2)}`;
+                const pricePolPerDft = polBalance / dftBalance;
+                const priceUsd = pricePolPerDft * 0.10;
                 
-                document.getElementById('priceTimestamp').innerText = `Actualizado: ${new Date().toLocaleTimeString()}`;
+                document.getElementById('dftPrice').innerHTML = 
+                    `$${priceUsd.toFixed(8)} <small style="font-size:0.5em">/ DFT</small>`;
                 
-                // Simular cambio de precio (aleatorio para demostración)
-                const change = (Math.random() * 5 - 2.5).toFixed(2);
-                const changeElement = document.getElementById('priceChange');
-                changeElement.innerText = `${change}% en 24h`;
-                changeElement.className = `price-change ${parseFloat(change) >= 0 ? 'positive' : 'negative'}`;
+                document.getElementById('poolUsd').innerText = 
+                    `$${(polBalance * 0.10 + dftBalance * priceUsd).toFixed(2)}`;
+                
+                await loadChartData();
                 
             } catch (error) {
-                console.error('Error actualizando precios:', error);
+                console.error('Error cargando pool:', error);
             }
         }
-        
-        // Inicializar gráfica
-        async function initChart() {
-            if (chartInitialized) return;
-            
+
+        async function getPoolBalance(type) {
+            try {
+                if (type === 'native') {
+                    if (!web3) web3 = new Web3('https://polygon-rpc.com');
+                    const wei = await web3.eth.getBalance(CONFIG.poolAddress);
+                    return parseFloat(web3.utils.fromWei(wei, 'ether'));
+                } else {
+                    const url = `https://api.polygonscan.com/api?module=account&action=tokenbalance&contractaddress=${CONFIG.dftToken}&address=${CONFIG.poolAddress}&tag=latest&apikey=${CONFIG.polygonscanApiKey}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    return parseInt(data.result) / 1e18;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                return 0;
+            }
+        }
+
+        // ============ TRANSACCIONES ============
+        async function loadTransactions() {
+            try {
+                const url = `https://api.polygonscan.com/api?module=account&action=txlist&address=${CONFIG.poolAddress}&sort=desc&apikey=${CONFIG.polygonscanApiKey}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('transactions-tbody');
+                
+                if (data.status !== '1' || data.result.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="error">No hay transacciones recientes</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                data.result.slice(0, 10).forEach(tx => {
+                    const date = new Date(tx.timeStamp * 1000);
+                    const value = web3 ? parseFloat(web3.utils.fromWei(tx.value, 'ether')).toFixed(4) : '0';
+                    
+                    html += `<tr>
+                        <td><a href="https://polygonscan.com/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}...</a></td>
+                        <td>${tx.input === '0x' ? '💱 Transfer' : '🔄 Swap'}</td>
+                        <td>${value} ${tx.to === CONFIG.poolAddress ? 'POL' : '?'}</td>
+                        <td>--</td>
+                        <td>${date.toLocaleString()}</td>
+                    </tr>`;
+                });
+                
+                tbody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando transacciones:', error);
+                document.getElementById('transactions-tbody').innerHTML = 
+                    '<tr><td colspan="5" class="error">Error cargando transacciones</td></tr>';
+            }
+        }
+
+        // ============ GRÁFICA ============
+        async function loadChartData() {
+            try {
+                const query = `
+                {
+                  pool(id: "${CONFIG.poolAddress.toLowerCase()}") {
+                    swaps(first: 7, orderBy: timestamp, orderDirection: desc) {
+                      amount0
+                      amount1
+                      timestamp
+                    }
+                  }
+                }`;
+                
+                const response = await fetch(CONFIG.uniswapSubgraph, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                
+                const data = await response.json();
+                
+                if (data.data?.pool?.swaps) {
+                    const swaps = data.data.pool.swaps.reverse();
+                    const labels = swaps.map(s => new Date(s.timestamp * 1000).toLocaleDateString());
+                    const prices = swaps.map(s => {
+                        const amount0 = Math.abs(parseFloat(s.amount0));
+                        const amount1 = Math.abs(parseFloat(s.amount1));
+                        return (amount1 / amount0) * 0.10;
+                    });
+                    updateChart(labels, prices);
+                } else {
+                    createFallbackChart();
+                }
+            } catch (error) {
+                console.error('Error cargando gráfica:', error);
+                createFallbackChart();
+            }
+        }
+
+        function createFallbackChart() {
+            const labels = ['Hace 7d', 'Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Ayer', 'Hoy'];
+            const prices = [0.0000095, 0.0000098, 0.0000099, 0.0000101, 0.0000100, 0.0000102, 0.0000123];
+            updateChart(labels, prices);
+        }
+
+        function updateChart(labels, prices) {
             const ctx = document.getElementById('priceChart').getContext('2d');
             
-            // Generar datos de los últimos 7 días (simulados)
-            const labels = [];
-            const prices = [];
-            
-            const now = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date(now);
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' }));
-                
-                // Simular variación de precio alrededor de 0.00001
-                const basePrice = 0.00001;
-                const variation = (Math.random() * 0.000002) - 0.000001;
-                prices.push(basePrice + variation);
-            }
+            if (priceChart) priceChart.destroy();
             
             priceChart = new Chart(ctx, {
                 type: 'line',
@@ -497,82 +338,22 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toFixed(6);
-                                }
-                            }
+                        y: { 
+                            ticks: { callback: v => '$' + v.toFixed(8) }
                         }
                     }
                 }
             });
-            
-            chartInitialized = true;
         }
-        
-        function refreshChartData() {
-            if (priceChart) {
-                // Actualizar con nuevos datos simulados
-                const newData = [];
-                for (let i = 0; i < 7; i++) {
-                    const basePrice = 0.00001;
-                    const variation = (Math.random() * 0.000002) - 0.000001;
-                    newData.push(basePrice + variation);
-                }
-                priceChart.data.datasets[0].data = newData;
-                priceChart.update();
-            }
-        }
-        
-        // Cargar transacciones simuladas
-        async function loadTransactions() {
-            const tbody = document.getElementById('transactions-tbody');
-            
-            // Transacciones simuladas
-            const transactions = [
-                { type: '💱 Swap', amount: '150 DFT', price: '0.0000102 USD', wallet: '0x8f3...b3d2', time: '5 min', direction: 'buy' },
-                { type: '💱 Swap', amount: '75 DFT', price: '0.0000098 USD', wallet: '0x4a2...c7e1', time: '23 min', direction: 'sell' },
-                { type: '💧 Liquidez', amount: '+500 DFT', price: '-', wallet: '0x2f1...dfd', time: '2 hs', direction: 'add' },
-                { type: '💱 Swap', amount: '200 DFT', price: '0.0000101 USD', wallet: '0x9b7...f45a', time: '5 hs', direction: 'buy' },
-                { type: '🔥 Quema', amount: '5 DFT', price: '-', wallet: '0xc7e...230f', time: '12 hs', direction: 'burn' }
-            ];
-            
-            let html = '';
-            transactions.forEach(tx => {
-                html += `<tr>
-                    <td>${tx.type}</td>
-                    <td>${tx.amount}</td>
-                    <td>${tx.price}</td>
-                    <td>${tx.wallet}</td>
-                    <td>${tx.time}</td>
-                </tr>`;
-            });
-            
-            tbody.innerHTML = html;
-        }
-        
-        function refreshTransactions() {
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            loadPoolData();
             loadTransactions();
-        }
-        
-        // Inicializar todo cuando carga la página
-        window.addEventListener('load', function() {
-            updatePriceDisplay();
-            initChart();
-            loadTransactions();
-            
-            // Actualizar precio cada 30 segundos
-            setInterval(updatePriceDisplay, 30000);
+            setInterval(loadPoolData, 60000);
         });
-        
     </script>
 </body>
 </html>
