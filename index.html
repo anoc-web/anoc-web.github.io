@@ -5,9 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DFT Web3 Services</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos adicionales para el botón de wallet */
+        .wallet-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .wallet-info {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-family: monospace;
+            color: #333;
+            border: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .disconnect-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .balance-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Nueva sección de wallet arriba -->
+        <div class="wallet-section" id="walletSection">
+            <button class="connect-btn" id="connectWalletBtn" onclick="connectWallet()">
+                🔌 Conectar Wallet
+            </button>
+        </div>
+
         <header>
             <h1>🚀 DFT Web3 Services</h1>
             <p class="subtitle">Ecosistema DeFi en Polygon</p>
@@ -15,12 +77,23 @@
 
         <section class="hero">
             <h2>Token <span class="highlight">Deflation (DFT)</span></h2>
-            <p class="contract">Contrato: 0xc7E42Bb5...12f8d230F</p>
+            <p class="contract">Contrato: 0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F</p>
             <div class="pool-info">
                 <p>Pool DFT/POL en Uniswap V4</p>
                 <a href="https://app.uniswap.org/positions/v4/polygon/79290" target="_blank">Ver posición</a>
             </div>
         </section>
+
+        <!-- Nueva sección para mostrar saldos (inicialmente oculta) -->
+        <div id="balanceSection" style="display: none;">
+            <div class="balance-info">
+                <h3>📊 Tus Saldos en Polygon</h3>
+                <p><strong>Dirección:</strong> <span id="walletAddress"></span></p>
+                <p><strong>💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
+                <p><strong>Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
+                <p><strong>💧 Tu liquidez en el pool:</strong> <span id="poolLiquidity">Consultando...</span></p>
+            </div>
+        </div>
 
         <section class="services">
             <h2>🛠️ Servicios Web3 (Próximamente)</h2>
@@ -57,5 +130,135 @@
             <p class="github">Hecho con ❤️ desde GitHub</p>
         </footer>
     </div>
+
+    <!-- Librería Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
+    
+    <!-- Código JavaScript para conectar wallet -->
+    <script>
+        // Direcciones de tus contratos
+        const DFT_TOKEN_ADDRESS = '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F';
+        const YOUR_WALLET = '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD'; // Tu wallet
+        const POOL_ADDRESS = '0x67366782805870060151383F4BbFF9daB53e5cD6'; // Pool DFT/POL
+        
+        let web3;
+        let userAccount;
+        
+        // ABI mínimo para leer balance de token ERC20
+        const tokenABI = [
+            {
+                "constant": true,
+                "inputs": [{"name": "_owner", "type": "address"}],
+                "name": "balanceOf",
+                "outputs": [{"name": "balance", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{"name": "", "type": "uint8"}],
+                "type": "function"
+            }
+        ];
+        
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    // Solicitar conexión
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    userAccount = accounts[0];
+                    
+                    // Inicializar Web3
+                    web3 = new Web3(window.ethereum);
+                    
+                    // Actualizar UI
+                    document.getElementById('walletSection').innerHTML = `
+                        <div class="wallet-info">
+                            <span>🔗 ${userAccount.slice(0, 6)}...${userAccount.slice(-4)}</span>
+                            <button class="disconnect-btn" onclick="disconnectWallet()">Desconectar</button>
+                        </div>
+                    `;
+                    
+                    // Mostrar sección de balances
+                    document.getElementById('balanceSection').style.display = 'block';
+                    
+                    // Cargar balances
+                    await loadBalances();
+                    
+                } catch (error) {
+                    console.error('Error conectando wallet:', error);
+                    alert('Error al conectar wallet: ' + error.message);
+                }
+            } else {
+                alert('¡Necesitas MetaMask! Por favor instala MetaMask desde https://metamask.io/');
+            }
+        }
+        
+        async function loadBalances() {
+            try {
+                // Balance de POL (native)
+                const polBalanceWei = await web3.eth.getBalance(userAccount);
+                const polBalance = web3.utils.fromWei(polBalanceWei, 'ether');
+                document.getElementById('polBalance').innerText = parseFloat(polBalance).toFixed(4) + ' POL';
+                
+                // Balance de DFT
+                const tokenContract = new web3.eth.Contract(tokenABI, DFT_TOKEN_ADDRESS);
+                
+                // Obtener decimals del token
+                let decimals;
+                try {
+                    decimals = await tokenContract.methods.decimals().call();
+                } catch (e) {
+                    decimals = 18; // Por defecto si falla
+                }
+                
+                const dftBalanceWei = await tokenContract.methods.balanceOf(userAccount).call();
+                const dftBalance = dftBalanceWei / (10 ** decimals);
+                document.getElementById('dftBalance').innerText = dftBalance.toFixed(2) + ' DFT';
+                
+                // Verificar si la wallet conectada es la tuya (para mostrar mensaje especial)
+                if (userAccount.toLowerCase() === YOUR_WALLET.toLowerCase()) {
+                    document.getElementById('walletAddress').innerHTML = '🚀 <strong>Wallet Principal (Tú)</strong> - ' + userAccount;
+                    
+                    // Consultar liquidez en el pool (simplificado)
+                    document.getElementById('poolLiquidity').innerHTML = 'Eres el proveedor de liquidez del pool DFT/POL';
+                } else {
+                    document.getElementById('walletAddress').innerText = userAccount;
+                    
+                    // Para otras wallets, consultar si tienen liquidez en el pool
+                    // Esto es más complejo, lo dejamos para después
+                    document.getElementById('poolLiquidity').innerHTML = 'Conectado como visitor';
+                }
+                
+            } catch (error) {
+                console.error('Error cargando balances:', error);
+                document.getElementById('dftBalance').innerText = 'Error al cargar';
+                document.getElementById('polBalance').innerText = 'Error al cargar';
+            }
+        }
+        
+        function disconnectWallet() {
+            userAccount = null;
+            document.getElementById('walletSection').innerHTML = `
+                <button class="connect-btn" onclick="connectWallet()">
+                    🔌 Conectar Wallet
+                </button>
+            `;
+            document.getElementById('balanceSection').style.display = 'none';
+        }
+        
+        // Escuchar cambios de cuenta en MetaMask
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', function(accounts) {
+                if (accounts.length > 0) {
+                    userAccount = accounts[0];
+                    loadBalances();
+                } else {
+                    disconnectWallet();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
