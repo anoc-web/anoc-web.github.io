@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* (Mantén los mismos estilos que antes) */
         .wallet-section { display: flex; justify-content: flex-end; margin-bottom: 20px; }
         .connect-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
         .connect-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
@@ -116,15 +117,17 @@
             dftToken: '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F',
             poolAddress: '0x67366782805870060151383F4BbFF9daB53e5cD6',
             yourWallet: '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD',
-            polygonscanApiKey: 'MEB455IX85UYJEH2JUXP8STNVNV4RU1HZI', // ← TU API KEY
+            polygonscanApiKey: 'MEB455IX85UYJEH2JUXP8STNVNV4RU1HZI',
             uniswapSubgraph: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v4-polygon'
         };
+
+        // ============ PROXY CORS (¡NUEVO! - Soluciona el bloqueo) ============
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
         let web3;
         let userAccount;
         let priceChart;
 
-        // ABI para leer balance del token
         const erc20ABI = [{
             "constant": true,
             "inputs": [{"name": "_owner", "type": "address"}],
@@ -191,7 +194,7 @@
             document.getElementById('balanceSection').style.display = 'none';
         }
 
-        // ============ DATOS DEL POOL (CORREGIDO con Etherscan API V2) ============
+        // ============ DATOS DEL POOL ============
         async function loadPoolData() {
             try {
                 const polBalance = await getPoolBalance('native');
@@ -223,9 +226,10 @@
                     const wei = await web3.eth.getBalance(CONFIG.poolAddress);
                     return parseFloat(web3.utils.fromWei(wei, 'ether'));
                 } else {
-                    // ✅ CORREGIDO: Usando Etherscan API V2 con chainid=137
-                    const url = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=tokenbalance&contractaddress=${CONFIG.dftToken}&address=${CONFIG.poolAddress}&tag=latest&apikey=${CONFIG.polygonscanApiKey}`;
-                    const response = await fetch(url);
+                    // ✅ USANDO PROXY para evitar CORS
+                    const apiUrl = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=tokenbalance&contractaddress=${CONFIG.dftToken}&address=${CONFIG.poolAddress}&tag=latest&apikey=${CONFIG.polygonscanApiKey}`;
+                    const proxyUrl = CORS_PROXY + apiUrl;
+                    const response = await fetch(proxyUrl);
                     const data = await response.json();
                     return parseInt(data.result) / 1e18;
                 }
@@ -235,12 +239,13 @@
             }
         }
 
-        // ============ TRANSACCIONES (CORREGIDO con Etherscan API V2) ============
+        // ============ TRANSACCIONES ============
         async function loadTransactions() {
             try {
-                // ✅ CORREGIDO: Usando Etherscan API V2 con chainid=137
-                const url = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=txlist&address=${CONFIG.poolAddress}&sort=desc&apikey=${CONFIG.polygonscanApiKey}`;
-                const response = await fetch(url);
+                // ✅ USANDO PROXY para evitar CORS
+                const apiUrl = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=txlist&address=${CONFIG.poolAddress}&sort=desc&apikey=${CONFIG.polygonscanApiKey}`;
+                const proxyUrl = CORS_PROXY + apiUrl;
+                const response = await fetch(proxyUrl);
                 const data = await response.json();
                 
                 const tbody = document.getElementById('transactions-tbody');
