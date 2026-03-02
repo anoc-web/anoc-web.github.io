@@ -3,36 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Web3 Services - Dashboard Completo</title>
-    <link rel="stylesheet" href="style.css">
+    <title>DFT Web3 Services - Dark Mode</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ========== ESTILOS COMPLETOS ========== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
+        /* ========== TEMA OSCURO PROFESIONAL ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0b0e;
+            color: #e4e6eb;
+            line-height: 1.6;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
         
-        /* Header */
+        /* Header con gradiente oscuro */
         header {
             text-align: center;
-            padding: 40px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 10px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #1a1c24 0%, #0f1219 100%);
+            border-radius: 16px;
             margin-bottom: 30px;
+            border: 1px solid #2d3340;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-        header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .subtitle { font-size: 1.2em; opacity: 0.9; }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #7b8cde, #9f7aea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #8f9bb3;
+            font-size: 1.1em;
+        }
         
         /* Wallet Section */
         .wallet-section {
@@ -40,158 +58,201 @@
             justify-content: flex-end;
             margin-bottom: 20px;
         }
+        
         .connect-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            background: linear-gradient(135deg, #2d3340, #1f232c);
+            color: #7b8cde;
+            border: 1px solid #3f4555;
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
+        
         .connect-btn:hover {
+            border-color: #7b8cde;
+            box-shadow: 0 4px 16px rgba(123, 140, 222, 0.3);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
+        
         .wallet-info {
-            background: white;
+            background: #1a1c24;
             padding: 10px 20px;
-            border-radius: 25px;
+            border-radius: 30px;
             font-family: monospace;
-            color: #333;
-            border: 2px solid #667eea;
+            color: #7b8cde;
+            border: 1px solid #3f4555;
             display: flex;
             align-items: center;
             gap: 15px;
         }
+        
         .disconnect-btn {
-            background: #ff4757;
-            color: white;
+            background: #2d3340;
+            color: #ff6b6b;
             border: none;
             padding: 5px 15px;
-            border-radius: 15px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
+            transition: all 0.3s;
         }
         
-        /* Balance Section */
-        .balance-info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            border-left: 4px solid #667eea;
+        .disconnect-btn:hover {
+            background: #3f4555;
         }
         
-        /* Dashboard Grid */
+        /* Cards con diseño oscuro */
+        .balance-info, .dashboard-card {
+            background: #14161c;
+            border: 1px solid #2d3340;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            border-color: #7b8cde;
+            transform: translateY(-4px);
+        }
+        
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
-        .dashboard-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-        .dashboard-card h3 {
-            color: #667eea;
+        
+        h2, h3 {
+            color: #e4e6eb;
             margin-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
+        }
+        
+        h3 {
+            border-bottom: 1px solid #2d3340;
+            padding-bottom: 12px;
+            color: #7b8cde;
+            font-weight: 600;
         }
         
         /* Price Display */
         .price-display {
             text-align: center;
-            padding: 15px;
+            padding: 20px;
         }
+        
         .price-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 3em;
+            font-weight: 700;
+            color: #7b8cde;
+            text-shadow: 0 0 20px rgba(123, 140, 222, 0.3);
         }
+        
         .price-change {
             font-size: 1.1em;
             margin-top: 10px;
+            font-weight: 500;
         }
-        .price-change.positive { color: #00b894; }
-        .price-change.negative { color: #d63031; }
         
-        /* Chart */
+        .price-change.positive { color: #4cd964; }
+        .price-change.negative { color: #ff6b6b; }
+        
+        /* Chart Container */
         .chart-container {
-            height: 300px;
+            background: #14161c;
+            border: 1px solid #2d3340;
+            border-radius: 16px;
+            padding: 24px;
             margin: 20px 0;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
         
-        /* Transactions Table */
+        /* Table */
         .transactions-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9em;
         }
+        
         .transactions-table th {
-            background: #667eea;
-            color: white;
-            padding: 12px;
+            background: #1a1c24;
+            color: #7b8cde;
+            padding: 15px;
             text-align: left;
-        }
-        .transactions-table td {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .transactions-table tr:hover {
-            background: #f9f9f9;
+            font-weight: 600;
+            border-bottom: 2px solid #2d3340;
         }
         
-        /* Badges */
+        .transactions-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2d3340;
+            color: #b4b9c4;
+        }
+        
+        .transactions-table tr:hover td {
+            background: #1a1c24;
+            color: #e4e6eb;
+        }
+        
+        .transactions-table a {
+            color: #7b8cde;
+            text-decoration: none;
+        }
+        
+        .transactions-table a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Badges y warnings */
         .badge {
             display: inline-block;
-            background: #764ba2;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
+            background: #2d3340;
+            color: #7b8cde;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 0.8em;
-            margin-top: 10px;
-        }
-        .warning {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
+            font-weight: 600;
+            border: 1px solid #3f4555;
         }
         
-        /* Stats Lists */
+        .warning {
+            background: rgba(255, 170, 0, 0.1);
+            border-left: 4px solid #ffaa00;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            color: #ffd966;
+            border: 1px solid #3f4555;
+        }
+        
+        /* Lists */
         .stats-list {
             list-style: none;
-            margin-top: 10px;
+            margin-top: 15px;
         }
+        
         .stats-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            border-bottom: 1px solid #2d3340;
+            color: #b4b9c4;
+        }
+        
+        .stats-list li strong {
+            color: #7b8cde;
+            font-weight: 600;
         }
         
         /* Footer */
         footer {
             text-align: center;
             padding: 30px 20px;
-            color: #666;
-            margin-top: 40px;
-            border-top: 1px solid #ddd;
+            color: #5a6270;
+            margin-top: 50px;
+            border-top: 1px solid #2d3340;
         }
         
         /* Responsive */
@@ -218,27 +279,25 @@
         <!-- Balance Section -->
         <div id="balanceSection" style="display: none;">
             <div class="balance-info">
-                <h3>📊 Tus Saldos en Polygon</h3>
-                <p><strong>Dirección:</strong> <span id="walletAddress"></span></p>
-                <p><strong>💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
-                <p><strong>Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
-                <p><strong>💵 Valor total:</strong> <span id="totalValue">Calculando...</span></p>
+                <h3 style="border-bottom: none; color: #7b8cde;">📊 Tus Saldos</h3>
+                <p><strong style="color:#7b8cde;">Dirección:</strong> <span id="walletAddress" style="color:#b4b9c4;"></span></p>
+                <p><strong style="color:#7b8cde;">💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
+                <p><strong style="color:#7b8cde;">Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
+                <p><strong style="color:#7b8cde;">💵 Valor total:</strong> <span id="totalValue">Calculando...</span></p>
             </div>
         </div>
 
-        <!-- Dashboard Principal -->
+        <!-- Dashboard Grid -->
         <div class="dashboard-grid">
-            <!-- Precio Card -->
             <div class="dashboard-card">
                 <h3>💰 Precio DFT</h3>
                 <div class="price-display">
                     <div class="price-value" id="dftPrice">$0.00012</div>
                     <div class="price-change positive" id="priceChange">+2.3%</div>
-                    <p style="font-size:0.9em; color:#666;">≈ 0.0012 POL / DFT</p>
+                    <p style="color:#5a6270; font-size:0.9em;">≈ 0.0012 POL / DFT</p>
                 </div>
             </div>
             
-            <!-- Pool Card -->
             <div class="dashboard-card">
                 <h3>💧 Pool DFT/POL</h3>
                 <ul class="stats-list">
@@ -246,10 +305,9 @@
                     <li><strong>DFT:</strong> <span id="poolDft">8,345.64</span> DFT</li>
                     <li><strong>Total USD:</strong> <span id="poolUsd">$1.26</span></li>
                 </ul>
-                <span class="badge">Liquidez baja</span>
+                <span class="badge" style="margin-top:15px;">Liquidez baja</span>
             </div>
             
-            <!-- Quemas Card -->
             <div class="dashboard-card">
                 <h3>🔥 Quemas (1%)</h3>
                 <ul class="stats-list">
@@ -265,13 +323,13 @@
             ⚠️ <strong>Liquidez baja:</strong> El pool tiene $1.26 USD. Intercambios grandes causarán alto impacto en el precio.
         </div>
 
-        <!-- Gráfico -->
+        <!-- Chart -->
         <div class="chart-container">
-            <h3 style="margin-bottom:15px;">📊 Precio DFT (7 días)</h3>
+            <h3 style="border-bottom: none; margin-bottom: 20px;">📊 Precio DFT (7 días)</h3>
             <canvas id="priceChart"></canvas>
         </div>
 
-        <!-- Más Stats -->
+        <!-- More Stats -->
         <div class="dashboard-grid">
             <div class="dashboard-card">
                 <h3>📊 Tu Posición</h3>
@@ -284,9 +342,8 @@
             
             <div class="dashboard-card">
                 <h3>🎯 Estrategia</h3>
-                <p>Proyectos externos para:</p>
-                <ul class="stats-list">
-                    <li>✅ Comprar DFT en el pool</li>
+                <ul class="stats-list" style="list-style: none; padding-left:0;">
+                    <li>✅ Comprar DFT en pool</li>
                     <li>✅ Añadir liquidez</li>
                     <li>✅ Aumentar valor</li>
                 </ul>
@@ -294,18 +351,18 @@
             
             <div class="dashboard-card">
                 <h3>🔄 Simulador</h3>
-                <p><strong>Swap 1,000 DFT:</strong></p>
                 <ul class="stats-list">
+                    <li><strong>Swap 1,000 DFT:</strong></li>
                     <li>Recibes: 1.2 POL ($0.12)</li>
                     <li>Quemas: 10 DFT</li>
-                    <li>Impacto: Alto</li>
+                    <li style="color:#ffaa00;">Impacto: Alto</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Tabla de Transacciones -->
+        <!-- Transactions Table -->
         <div class="dashboard-card" style="margin-top:20px;">
-            <h3>🔄 Últimas Transacciones</h3>
+            <h3 style="border-bottom: none;">🔄 Últimas Transacciones</h3>
             <table class="transactions-table">
                 <thead>
                     <tr>
@@ -339,13 +396,13 @@
         </div>
 
         <footer>
-            <p>© 2025 - Ecosistema DFT en Polygon</p>
-            <p>Construyendo el futuro paso a paso | Datos actualizados en tiempo real</p>
+            <p>© 2025 - DFT Ecosystem | Dark Mode Trading Edition</p>
+            <p style="color:#5a6270; font-size:0.9em;">Construyendo el futuro en Polygon</p>
         </footer>
     </div>
 
     <script>
-        // ============ CONFIGURACIÓN ============
+        // ============ CONFIG ============
         const CONFIG = {
             dftToken: '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F',
             yourWallet: '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD',
@@ -427,11 +484,10 @@
             document.getElementById('balanceSection').style.display = 'none';
         }
 
-        // ============ GRÁFICO ============
+        // ============ CHART ============
         function initChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
             
-            // Datos simulados basados en tu pool real
             const labels = ['Hace 7d', 'Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Hace 2d', 'Ayer', 'Hoy'];
             const prices = [0.00009, 0.000095, 0.00010, 0.00011, 0.000115, 0.000118, 0.000119, 0.00012];
             
@@ -442,8 +498,8 @@
                     datasets: [{
                         label: 'Precio DFT (USD)',
                         data: prices,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#7b8cde',
+                        backgroundColor: 'rgba(123, 140, 222, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]
@@ -456,18 +512,22 @@
                     },
                     scales: {
                         y: {
-                            ticks: {
-                                callback: function(value) {
-                                    return '$' + value.toFixed(6);
-                                }
+                            grid: { color: '#2d3340' },
+                            ticks: { 
+                                color: '#8f9bb3',
+                                callback: v => '$' + v.toFixed(6)
                             }
+                        },
+                        x: {
+                            grid: { color: '#2d3340' },
+                            ticks: { color: '#8f9bb3' }
                         }
                     }
                 }
             });
         }
 
-        // Inicializar
+        // Init
         window.addEventListener('load', () => {
             initChart();
             if (window.ethereum && window.ethereum.selectedAddress) {
