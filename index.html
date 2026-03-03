@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFT Web3 Services - Dark Mode</title>
+    <title>DFT Web3 Services - Datos en Vivo</title>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ========== TEMA OSCURO ========== */
+        /* ========== TEMA OSCURO (igual que antes) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -133,7 +133,7 @@
         .price-change.positive { color: #4cd964; }
         .price-change.negative { color: #ff6b6b; }
         
-        /* Chart - CORREGIDO para que no se deforme */
+        /* Chart */
         .chart-container {
             background: #14161c;
             border: 1px solid #2d3340;
@@ -146,7 +146,7 @@
             position: relative;
             width: 100%;
             height: 0;
-            padding-bottom: 50%; /* Relación 2:1 (ancho:alto) */
+            padding-bottom: 50%;
             max-height: 400px;
             min-height: 250px;
         }
@@ -220,6 +220,13 @@
             color: #7b8cde;
         }
         
+        .last-update {
+            text-align: right;
+            font-size: 0.8em;
+            color: #5a6270;
+            margin-top: 10px;
+        }
+        
         /* Footer */
         footer {
             text-align: center;
@@ -249,7 +256,7 @@
             <p class="subtitle">Ecosistema DeFi en Polygon</p>
         </header>
 
-        <!-- Balance Section - AHORA DINÁMICA (solo se ve conectando) -->
+        <!-- Balance Section -->
         <div id="balanceSection" style="display: none;">
             <div class="dashboard-card" style="margin-bottom:20px;">
                 <h3 style="border-bottom: none;">📊 Tus Saldos</h3>
@@ -260,42 +267,44 @@
             </div>
         </div>
 
-        <!-- Pool Info - PÚBLICA (no muestra datos personales) -->
+        <!-- Pool Data - AHORA EN VIVO -->
         <div class="dashboard-grid">
             <div class="dashboard-card">
                 <h3>💰 Precio DFT</h3>
                 <div class="price-display">
-                    <div class="price-value" id="dftPrice">$0.00012</div>
-                    <div class="price-change positive" id="priceChange">+2.3%</div>
-                    <p style="color:#5a6270;">≈ 0.0012 POL / DFT</p>
+                    <div class="price-value" id="dftPrice">Cargando...</div>
+                    <div class="price-change" id="priceChange">--</div>
+                    <p style="color:#5a6270;" id="priceInPol">≈ -- POL / DFT</p>
                 </div>
             </div>
             
             <div class="dashboard-card">
                 <h3>💧 Pool DFT/POL</h3>
                 <ul class="stats-list">
-                    <li><strong>POL en pool:</strong> 10.00 POL</li>
-                    <li><strong>DFT en pool:</strong> 8,345.64 DFT</li>
-                    <li><strong>Total USD:</strong> $1.26</li>
+                    <li><strong>POL en pool:</strong> <span id="poolPol">Cargando...</span></li>
+                    <li><strong>DFT en pool:</strong> <span id="poolDft">Cargando...</span></li>
+                    <li><strong>Total USD:</strong> $<span id="poolUsd">0.00</span></li>
                 </ul>
-                <span class="badge" style="margin-top:15px;">Liquidez baja</span>
+                <span class="badge" style="margin-top:15px;" id="liquidityBadge">Cargando...</span>
+                <div class="last-update" id="poolUpdateTime"></div>
             </div>
             
             <div class="dashboard-card">
                 <h3>🔥 Quemas (1%)</h3>
                 <ul class="stats-list">
-                    <li><strong>Total quemado:</strong> 16,234 DFT</li>
+                    <li><strong>Total quemado:</strong> <span id="totalBurned">Calculando...</span></li>
+                    <li><strong>Última quema:</strong> <span id="lastBurn">--</span></li>
                     <li><strong>Tasa:</strong> 1% por tx</li>
                 </ul>
             </div>
         </div>
 
         <!-- Warning -->
-        <div class="warning">
-            ⚠️ <strong>Liquidez baja:</strong> El pool tiene $1.26 USD. Intercambios grandes causarán alto impacto en el precio.
+        <div class="warning" id="liquidityWarning">
+            ⚠️ <strong>Liquidez baja:</strong> El pool tiene $<span id="warningUsd">0.00</span> USD. Intercambios grandes causarán alto impacto en el precio.
         </div>
 
-        <!-- Chart - CORREGIDO (wrapper con aspecto fijo) -->
+        <!-- Chart -->
         <div class="chart-container">
             <h3 style="border-bottom: none; margin-bottom: 20px;">📊 Precio DFT (7 días)</h3>
             <div class="chart-wrapper">
@@ -309,7 +318,7 @@
                 <h3>📊 Sobre DFT</h3>
                 <ul class="stats-list">
                     <li><strong>Supply total:</strong> 1,000,000 DFT</li>
-                    <li><strong>En pool:</strong> 8,345 DFT (0.83%)</li>
+                    <li><strong>En pool:</strong> <span id="poolPercent">0</span>% del supply</li>
                     <li><strong>Quema:</strong> 1% automático</li>
                 </ul>
             </div>
@@ -327,8 +336,8 @@
                 <h3>🔄 Simulador</h3>
                 <ul class="stats-list">
                     <li><strong>Swap 1,000 DFT:</strong></li>
-                    <li>Recibes: ≈1.2 POL ($0.12)</li>
-                    <li>Quemas: 10 DFT</li>
+                    <li id="simulatorReceive">Calculando...</li>
+                    <li id="simulatorBurn">Calculando...</li>
                 </ul>
             </div>
         </div>
@@ -346,41 +355,31 @@
                     </tr>
                 </thead>
                 <tbody id="transactions-tbody">
-                    <tr>
-                        <td><a href="#">0xd749fd...</a></td>
-                        <td>🔄 Swap</td>
-                        <td>1621 DFT</td>
-                        <td>Hace 2 horas</td>
-                    </tr>
-                    <tr>
-                        <td><a href="#">0x322ce6...</a></td>
-                        <td>💱 Transfer</td>
-                        <td>500 DFT</td>
-                        <td>Hace 1 día</td>
-                    </tr>
+                    <tr><td colspan="4" class="loading">Cargando transacciones...</td></tr>
                 </tbody>
             </table>
         </div>
 
         <footer>
-            <p>© 2025 - DFT Ecosystem | Conecta tu wallet para ver tus saldos</p>
+            <p>© 2025 - DFT Ecosystem | Datos actualizados cada 30 segundos</p>
         </footer>
     </div>
 
     <script>
-        // ============ CONFIG ============
+        // ============ CONFIGURACIÓN ============
         const CONFIG = {
             dftToken: '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F',
-            poolData: {
-                pol: 10.00,
-                dft: 8345.64,
-                priceUsd: 0.00012
-            }
+            poolAddress: '0x67366782805870060151383F4BbFF9daB53e5cD6',
+            yourWallet: '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD',
+            polygonscanApiKey: 'MEB455IX85UYJEH2JUXP8STNVNV4RU1HZI',
+            totalSupply: 1000000, // 1 millón DFT
+            polPriceUsd: 0.11 // Precio aproximado de POL en USD
         };
 
         let web3;
         let userAccount;
         let priceChart;
+        let updateInterval;
 
         const erc20ABI = [{
             "constant": true,
@@ -390,7 +389,7 @@
             "type": "function"
         }];
 
-        // ============ WALLET ============
+        // ============ FUNCIONES DE WALLET ============
         async function connectWallet() {
             if (!window.ethereum) {
                 alert('Instala MetaMask!');
@@ -419,6 +418,8 @@
 
         async function loadBalances() {
             try {
+                if (!web3) return;
+                
                 // POL Balance
                 const polWei = await web3.eth.getBalance(userAccount);
                 const polBalance = parseFloat(web3.utils.fromWei(polWei, 'ether')).toFixed(4);
@@ -430,8 +431,8 @@
                 const dftBalance = (parseInt(dftWei) / 1e18).toFixed(2);
                 document.getElementById('dftBalance').innerText = parseFloat(dftBalance).toLocaleString() + ' DFT';
                 
-                // Total Value (estimado)
-                const polValue = parseFloat(polBalance) * 0.11;
+                // Total Value
+                const polValue = parseFloat(polBalance) * CONFIG.polPriceUsd;
                 const dftValue = parseFloat(dftBalance) * 0.00012;
                 document.getElementById('totalValue').innerText = `$${(polValue + dftValue).toFixed(2)} USD`;
                 
@@ -449,10 +450,131 @@
             document.getElementById('balanceSection').style.display = 'none';
         }
 
-        // ============ CHART ============
+        // ============ DATOS DEL POOL EN VIVO ============
+        async function fetchPoolData() {
+            try {
+                // Inicializar web3 si es necesario
+                if (!web3) {
+                    web3 = new Web3('https://polygon-rpc.com');
+                }
+                
+                // 1. Obtener balance de POL en el pool
+                const polWei = await web3.eth.getBalance(CONFIG.poolAddress);
+                const polBalance = parseFloat(web3.utils.fromWei(polWei, 'ether'));
+                
+                // 2. Obtener balance de DFT en el pool usando API
+                const tokenUrl = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=tokenbalance&contractaddress=${CONFIG.dftToken}&address=${CONFIG.poolAddress}&tag=latest&apikey=${CONFIG.polygonscanApiKey}`;
+                const tokenResponse = await fetch(tokenUrl);
+                const tokenData = await tokenResponse.json();
+                
+                let dftBalance = 0;
+                if (tokenData.status === "1") {
+                    dftBalance = parseInt(tokenData.result) / 1e18;
+                }
+                
+                // 3. Calcular precio
+                const priceInPol = dftBalance > 0 ? polBalance / dftBalance : 0;
+                const priceInUsd = priceInPol * CONFIG.polPriceUsd;
+                
+                // 4. Calcular total USD en pool
+                const totalUsd = (polBalance * CONFIG.polPriceUsd) + (dftBalance * priceInUsd);
+                
+                // 5. Porcentaje del supply en pool
+                const poolPercent = (dftBalance / CONFIG.totalSupply * 100).toFixed(2);
+                
+                // 6. Actualizar UI
+                document.getElementById('poolPol').innerText = polBalance.toFixed(4) + ' POL';
+                document.getElementById('poolDft').innerText = dftBalance.toFixed(2) + ' DFT';
+                document.getElementById('poolUsd').innerText = totalUsd.toFixed(2);
+                document.getElementById('warningUsd').innerText = totalUsd.toFixed(2);
+                document.getElementById('poolPercent').innerText = poolPercent;
+                
+                // Precio
+                document.getElementById('dftPrice').innerHTML = `$${priceInUsd.toFixed(8)}`;
+                document.getElementById('priceInPol').innerHTML = `≈ ${priceInPol.toFixed(6)} POL / DFT`;
+                
+                // Badge de liquidez
+                const badge = document.getElementById('liquidityBadge');
+                if (totalUsd < 10) {
+                    badge.innerText = 'Liquidez crítica';
+                    badge.style.background = '#5a1a1a';
+                } else if (totalUsd < 100) {
+                    badge.innerText = 'Liquidez baja';
+                    badge.style.background = '#5a4a1a';
+                } else {
+                    badge.innerText = 'Liquidez moderada';
+                    badge.style.background = '#1a5a1a';
+                }
+                
+                // Simulador
+                const receiveAmount = (1000 * priceInPol).toFixed(4);
+                document.getElementById('simulatorReceive').innerHTML = `Recibes: ≈ ${receiveAmount} POL ($${(receiveAmount * CONFIG.polPriceUsd).toFixed(2)})`;
+                document.getElementById('simulatorBurn').innerHTML = `Quemas: 10 DFT (1%)`;
+                
+                // Timestamp
+                document.getElementById('poolUpdateTime').innerHTML = `Actualizado: ${new Date().toLocaleTimeString()}`;
+                
+                return { polBalance, dftBalance, priceInUsd, totalUsd };
+                
+            } catch (error) {
+                console.error('Error fetching pool data:', error);
+            }
+        }
+
+        // ============ TRANSACCIONES EN VIVO ============
+        async function fetchTransactions() {
+            try {
+                const url = `https://api.etherscan.io/v2/api?chainid=137&module=account&action=txlist&address=${CONFIG.poolAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${CONFIG.polygonscanApiKey}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('transactions-tbody');
+                
+                if (data.status !== '1' || !data.result || data.result.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="error">No hay transacciones recientes</td></tr>';
+                    return;
+                }
+                
+                let html = '';
+                data.result.slice(0, 5).forEach(tx => { // Mostrar solo 5 para no saturar
+                    const date = new Date(tx.timeStamp * 1000);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    
+                    let timeAgo;
+                    if (diffMins < 60) {
+                        timeAgo = `hace ${diffMins} min`;
+                    } else if (diffMins < 1440) {
+                        timeAgo = `hace ${Math.floor(diffMins / 60)} h`;
+                    } else {
+                        timeAgo = date.toLocaleDateString();
+                    }
+                    
+                    const valueInPol = web3 ? parseFloat(web3.utils.fromWei(tx.value, 'ether')).toFixed(4) : '0';
+                    
+                    html += `<tr>
+                        <td><a href="https://polygonscan.com/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}...</a></td>
+                        <td>${tx.input === '0x' ? '💱 Transfer' : '🔄 Swap'}</td>
+                        <td>${valueInPol} POL</td>
+                        <td>${timeAgo}</td>
+                    </tr>`;
+                });
+                
+                tbody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error fetching transactions:', error);
+                document.getElementById('transactions-tbody').innerHTML = 
+                    '<tr><td colspan="4" class="error">Error cargando transacciones</td></tr>';
+            }
+        }
+
+        // ============ GRÁFICO ============
         function initChart() {
             const ctx = document.getElementById('priceChart').getContext('2d');
             
+            // Datos de ejemplo (después podemos hacer histórico real)
             const labels = ['Hace 7d', 'Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Hace 2d', 'Ayer', 'Hoy'];
             const prices = [0.00009, 0.000095, 0.00010, 0.00011, 0.000115, 0.000118, 0.000119, 0.00012];
             
@@ -492,10 +614,34 @@
             });
         }
 
-        // Inicializar
+        // ============ ACTUALIZACIÓN PERIÓDICA ============
+        async function updateAllData() {
+            await fetchPoolData();
+            await fetchTransactions();
+            
+            // Si hay wallet conectada, actualizar balances
+            if (userAccount && web3) {
+                await loadBalances();
+            }
+        }
+
+        // ============ INICIALIZACIÓN ============
         window.addEventListener('load', () => {
             initChart();
-            window.addEventListener('resize', initChart); // Redibuja si cambia tamaño
+            updateAllData();
+            
+            // Actualizar cada 30 segundos
+            updateInterval = setInterval(updateAllData, 30000);
+            
+            // Si ya hay wallet conectada (por ejemplo, si recarga la página)
+            if (window.ethereum && window.ethereum.selectedAddress) {
+                connectWallet();
+            }
+        });
+
+        // Limpiar intervalo al cerrar/recargar
+        window.addEventListener('beforeunload', () => {
+            if (updateInterval) clearInterval(updateInterval);
         });
     </script>
 </body>
