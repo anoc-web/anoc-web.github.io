@@ -7,12 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ========== TEMA OSCURO PROFESIONAL ========== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ========== TEMA OSCURO ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,7 +23,7 @@
             padding: 20px;
         }
         
-        /* Header con gradiente oscuro */
+        /* Header */
         header {
             text-align: center;
             padding: 40px 20px;
@@ -35,7 +31,6 @@
             border-radius: 16px;
             margin-bottom: 30px;
             border: 1px solid #2d3340;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
         
         header h1 {
@@ -44,13 +39,9 @@
             background: linear-gradient(135deg, #7b8cde, #9f7aea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 700;
         }
         
-        .subtitle {
-            color: #8f9bb3;
-            font-size: 1.1em;
-        }
+        .subtitle { color: #8f9bb3; }
         
         /* Wallet Section */
         .wallet-section {
@@ -69,7 +60,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
         .connect-btn:hover {
@@ -98,28 +88,9 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.3s;
         }
         
-        .disconnect-btn:hover {
-            background: #3f4555;
-        }
-        
-        /* Cards con diseño oscuro */
-        .balance-info, .dashboard-card {
-            background: #14161c;
-            border: 1px solid #2d3340;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        
-        .dashboard-card:hover {
-            border-color: #7b8cde;
-            transform: translateY(-4px);
-        }
-        
+        /* Cards */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -127,16 +98,24 @@
             margin: 30px 0;
         }
         
-        h2, h3 {
-            color: #e4e6eb;
-            margin-bottom: 15px;
+        .dashboard-card {
+            background: #14161c;
+            border: 1px solid #2d3340;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+        
+        .dashboard-card:hover {
+            border-color: #7b8cde;
+            transform: translateY(-4px);
         }
         
         h3 {
+            color: #7b8cde;
             border-bottom: 1px solid #2d3340;
             padding-bottom: 12px;
-            color: #7b8cde;
-            font-weight: 600;
+            margin-bottom: 15px;
         }
         
         /* Price Display */
@@ -149,33 +128,41 @@
             font-size: 3em;
             font-weight: 700;
             color: #7b8cde;
-            text-shadow: 0 0 20px rgba(123, 140, 222, 0.3);
-        }
-        
-        .price-change {
-            font-size: 1.1em;
-            margin-top: 10px;
-            font-weight: 500;
         }
         
         .price-change.positive { color: #4cd964; }
         .price-change.negative { color: #ff6b6b; }
         
-        /* Chart Container */
+        /* Chart - CORREGIDO para que no se deforme */
         .chart-container {
             background: #14161c;
             border: 1px solid #2d3340;
             border-radius: 16px;
             padding: 24px;
             margin: 20px 0;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 50%; /* Relación 2:1 (ancho:alto) */
+            max-height: 400px;
+            min-height: 250px;
+        }
+        
+        #priceChart {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
         
         /* Table */
         .transactions-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9em;
         }
         
         .transactions-table th {
@@ -183,7 +170,6 @@
             color: #7b8cde;
             padding: 15px;
             text-align: left;
-            font-weight: 600;
             border-bottom: 2px solid #2d3340;
         }
         
@@ -193,21 +179,12 @@
             color: #b4b9c4;
         }
         
-        .transactions-table tr:hover td {
-            background: #1a1c24;
-            color: #e4e6eb;
-        }
-        
         .transactions-table a {
             color: #7b8cde;
             text-decoration: none;
         }
         
-        .transactions-table a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Badges y warnings */
+        /* Badges */
         .badge {
             display: inline-block;
             background: #2d3340;
@@ -215,7 +192,6 @@
             padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.8em;
-            font-weight: 600;
             border: 1px solid #3f4555;
         }
         
@@ -229,10 +205,9 @@
             border: 1px solid #3f4555;
         }
         
-        /* Lists */
+        /* Stats Lists */
         .stats-list {
             list-style: none;
-            margin-top: 15px;
         }
         
         .stats-list li {
@@ -243,7 +218,6 @@
         
         .stats-list li strong {
             color: #7b8cde;
-            font-weight: 600;
         }
         
         /* Footer */
@@ -258,7 +232,6 @@
         /* Responsive */
         @media (max-width: 600px) {
             header h1 { font-size: 1.8em; }
-            .dashboard-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -276,34 +249,34 @@
             <p class="subtitle">Ecosistema DeFi en Polygon</p>
         </header>
 
-        <!-- Balance Section -->
+        <!-- Balance Section - AHORA DINÁMICA (solo se ve conectando) -->
         <div id="balanceSection" style="display: none;">
-            <div class="balance-info">
-                <h3 style="border-bottom: none; color: #7b8cde;">📊 Tus Saldos</h3>
-                <p><strong style="color:#7b8cde;">Dirección:</strong> <span id="walletAddress" style="color:#b4b9c4;"></span></p>
-                <p><strong style="color:#7b8cde;">💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
-                <p><strong style="color:#7b8cde;">Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
-                <p><strong style="color:#7b8cde;">💵 Valor total:</strong> <span id="totalValue">Calculando...</span></p>
+            <div class="dashboard-card" style="margin-bottom:20px;">
+                <h3 style="border-bottom: none;">📊 Tus Saldos</h3>
+                <p><strong>Dirección:</strong> <span id="walletAddress" style="color:#b4b9c4; word-break: break-all;"></span></p>
+                <p><strong>💰 DFT:</strong> <span id="dftBalance">Cargando...</span></p>
+                <p><strong>Ⓜ️ POL:</strong> <span id="polBalance">Cargando...</span></p>
+                <p><strong>💵 Valor total:</strong> <span id="totalValue">Calculando...</span></p>
             </div>
         </div>
 
-        <!-- Dashboard Grid -->
+        <!-- Pool Info - PÚBLICA (no muestra datos personales) -->
         <div class="dashboard-grid">
             <div class="dashboard-card">
                 <h3>💰 Precio DFT</h3>
                 <div class="price-display">
                     <div class="price-value" id="dftPrice">$0.00012</div>
                     <div class="price-change positive" id="priceChange">+2.3%</div>
-                    <p style="color:#5a6270; font-size:0.9em;">≈ 0.0012 POL / DFT</p>
+                    <p style="color:#5a6270;">≈ 0.0012 POL / DFT</p>
                 </div>
             </div>
             
             <div class="dashboard-card">
                 <h3>💧 Pool DFT/POL</h3>
                 <ul class="stats-list">
-                    <li><strong>POL:</strong> <span id="poolPol">10.00</span> POL</li>
-                    <li><strong>DFT:</strong> <span id="poolDft">8,345.64</span> DFT</li>
-                    <li><strong>Total USD:</strong> <span id="poolUsd">$1.26</span></li>
+                    <li><strong>POL en pool:</strong> 10.00 POL</li>
+                    <li><strong>DFT en pool:</strong> 8,345.64 DFT</li>
+                    <li><strong>Total USD:</strong> $1.26</li>
                 </ul>
                 <span class="badge" style="margin-top:15px;">Liquidez baja</span>
             </div>
@@ -312,7 +285,6 @@
                 <h3>🔥 Quemas (1%)</h3>
                 <ul class="stats-list">
                     <li><strong>Total quemado:</strong> 16,234 DFT</li>
-                    <li><strong>Última quema:</strong> Hace 2 hs</li>
                     <li><strong>Tasa:</strong> 1% por tx</li>
                 </ul>
             </div>
@@ -323,26 +295,28 @@
             ⚠️ <strong>Liquidez baja:</strong> El pool tiene $1.26 USD. Intercambios grandes causarán alto impacto en el precio.
         </div>
 
-        <!-- Chart -->
+        <!-- Chart - CORREGIDO (wrapper con aspecto fijo) -->
         <div class="chart-container">
             <h3 style="border-bottom: none; margin-bottom: 20px;">📊 Precio DFT (7 días)</h3>
-            <canvas id="priceChart"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="priceChart"></canvas>
+            </div>
         </div>
 
-        <!-- More Stats -->
+        <!-- Info pública -->
         <div class="dashboard-grid">
             <div class="dashboard-card">
-                <h3>📊 Tu Posición</h3>
+                <h3>📊 Sobre DFT</h3>
                 <ul class="stats-list">
-                    <li><strong>Tus DFT:</strong> 991,621 (99.16%)</li>
-                    <li><strong>Tus POL:</strong> 22.37 POL</li>
-                    <li><strong>Valor total:</strong> ~$119 USD</li>
+                    <li><strong>Supply total:</strong> 1,000,000 DFT</li>
+                    <li><strong>En pool:</strong> 8,345 DFT (0.83%)</li>
+                    <li><strong>Quema:</strong> 1% automático</li>
                 </ul>
             </div>
             
             <div class="dashboard-card">
                 <h3>🎯 Estrategia</h3>
-                <ul class="stats-list" style="list-style: none; padding-left:0;">
+                <ul class="stats-list">
                     <li>✅ Comprar DFT en pool</li>
                     <li>✅ Añadir liquidez</li>
                     <li>✅ Aumentar valor</li>
@@ -353,9 +327,8 @@
                 <h3>🔄 Simulador</h3>
                 <ul class="stats-list">
                     <li><strong>Swap 1,000 DFT:</strong></li>
-                    <li>Recibes: 1.2 POL ($0.12)</li>
+                    <li>Recibes: ≈1.2 POL ($0.12)</li>
                     <li>Quemas: 10 DFT</li>
-                    <li style="color:#ffaa00;">Impacto: Alto</li>
                 </ul>
             </div>
         </div>
@@ -385,19 +358,12 @@
                         <td>500 DFT</td>
                         <td>Hace 1 día</td>
                     </tr>
-                    <tr>
-                        <td><a href="#">0x5c1a31...</a></td>
-                        <td>🔄 Swap</td>
-                        <td>1000 DFT</td>
-                        <td>Hace 3 días</td>
-                    </tr>
                 </tbody>
             </table>
         </div>
 
         <footer>
-            <p>© 2025 - DFT Ecosystem | Dark Mode Trading Edition</p>
-            <p style="color:#5a6270; font-size:0.9em;">Construyendo el futuro en Polygon</p>
+            <p>© 2025 - DFT Ecosystem | Conecta tu wallet para ver tus saldos</p>
         </footer>
     </div>
 
@@ -405,7 +371,6 @@
         // ============ CONFIG ============
         const CONFIG = {
             dftToken: '0xc7E42Bb5040A4bB3be72A7C468ffDEB12f8d230F',
-            yourWallet: '0x2F1DD0C5fd00f16226FcA016E5aC681243488DFD',
             poolData: {
                 pol: 10.00,
                 dft: 8345.64,
@@ -454,23 +419,23 @@
 
         async function loadBalances() {
             try {
+                // POL Balance
                 const polWei = await web3.eth.getBalance(userAccount);
                 const polBalance = parseFloat(web3.utils.fromWei(polWei, 'ether')).toFixed(4);
                 document.getElementById('polBalance').innerText = polBalance + ' POL';
                 
+                // DFT Balance
                 const tokenContract = new web3.eth.Contract(erc20ABI, CONFIG.dftToken);
                 const dftWei = await tokenContract.methods.balanceOf(userAccount).call();
                 const dftBalance = (parseInt(dftWei) / 1e18).toFixed(2);
                 document.getElementById('dftBalance').innerText = parseFloat(dftBalance).toLocaleString() + ' DFT';
                 
+                // Total Value (estimado)
                 const polValue = parseFloat(polBalance) * 0.11;
                 const dftValue = parseFloat(dftBalance) * 0.00012;
                 document.getElementById('totalValue').innerText = `$${(polValue + dftValue).toFixed(2)} USD`;
                 
-                document.getElementById('walletAddress').innerHTML = 
-                    userAccount.toLowerCase() === CONFIG.yourWallet.toLowerCase() 
-                        ? '🚀 Wallet Principal (Tú)' 
-                        : `Conectado: ${userAccount}`;
+                document.getElementById('walletAddress').innerText = userAccount;
                         
             } catch (error) {
                 console.error('Error cargando balances:', error);
@@ -491,6 +456,8 @@
             const labels = ['Hace 7d', 'Hace 6d', 'Hace 5d', 'Hace 4d', 'Hace 3d', 'Hace 2d', 'Ayer', 'Hoy'];
             const prices = [0.00009, 0.000095, 0.00010, 0.00011, 0.000115, 0.000118, 0.000119, 0.00012];
             
+            if (priceChart) priceChart.destroy();
+            
             priceChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -506,10 +473,8 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
                     scales: {
                         y: {
                             grid: { color: '#2d3340' },
@@ -527,12 +492,10 @@
             });
         }
 
-        // Init
+        // Inicializar
         window.addEventListener('load', () => {
             initChart();
-            if (window.ethereum && window.ethereum.selectedAddress) {
-                connectWallet();
-            }
+            window.addEventListener('resize', initChart); // Redibuja si cambia tamaño
         });
     </script>
 </body>
